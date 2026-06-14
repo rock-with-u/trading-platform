@@ -14,4 +14,11 @@ public class GlobalExceptionHandler {
                 .badRequest()
                 .body(ApiResponse.failure(ex.getErrorCode(), ex.getMessage()));
     }
+
+    @ExceptionHandler(AccountException.class)
+    public ResponseEntity<ApiResponse<String>> handleAccountException(AccountException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResponse.failure(ex.getErrorCode(), ex.getMessage()));
+    }
 }
