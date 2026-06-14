@@ -35,4 +35,11 @@ public class GlobalExceptionHandler {
                 .badRequest()
                 .body(ApiResponse.failure(ex.getErrorCode(), ex.getMessage()));
     }
+
+    @ExceptionHandler(MemberException.class)
+    public ResponseEntity<ApiResponse<String>> handleMemberException(MemberException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResponse.failure(ex.getErrorCode(), ex.getMessage()));
+    }
 }
