@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(OrderException.class)
-    public ResponseEntity<ApiResponse<String>> handleOrderException(OrderException ex) {
+    @ExceptionHandler(StockOrderException.class)
+    public ResponseEntity<ApiResponse<String>> handleOrderException(StockOrderException ex) {
         return ResponseEntity
                 .badRequest()
                 .body(ApiResponse.failure(ex.getErrorCode(), ex.getMessage()));

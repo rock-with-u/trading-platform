@@ -1,4 +1,200 @@
 package com.trade.platform.order.domain;
 
-public class StockOrder {
+import com.trade.platform.account.domain.Account;
+import com.trade.platform.common.entity.BaseEntity;
+import com.trade.platform.market.domain.Stock;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@Entity
+@Table(name = "stock_order")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class StockOrder extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "stock_order_id")
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "stock_id", nullable = false)
+    private Stock stock;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stock_order_root_id")
+    private StockOrder rootOrder;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stock_order_parent_id")
+    private StockOrder parentOrder;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_side", nullable = false, length = 10)
+    private StockOrderSide orderSide;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_type", nullable = false, length = 10)
+    private StockOrderType orderType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_action", nullable = false, length = 10)
+    private StockOrderAction orderAction;
+
+    @Column(name = "order_quantity", nullable = false)
+    private Long orderQuantity;
+
+    @Column(name = "filled_quantity", nullable = false)
+    private Long filledQuantity;
+
+    @Column(name = "remaining_quantity", nullable = false)
+    private Long remainingQuantity;
+
+    @Column(name = "canceled_quantity", nullable = false)
+    private Long canceledQuantity;
+
+    @Column(name = "limit_price")
+    private Long limitPrice;
+
+    @Column(name = "request_key", nullable = false, unique = true, length = 100)
+    private String requestKey;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_status", nullable = false, length = 30)
+    private StockOrderStatus orderStatus;
+
+    @Column(name = "order_at", nullable = false)
+    private LocalDateTime orderedAt;
+
+    private StockOrder(
+            Stock stock,
+            Account account,
+            StockOrder rootOrder,
+            StockOrder parentOrder,
+            StockOrderSide orderSide,
+            StockOrderType orderType,
+            StockOrderAction orderAction,
+            long orderQuantity,
+            Long limitPrice,
+            String requestKey,
+            LocalDateTime orderedAt
+    ) {
+        this.stock = stock;
+        this.account = account;
+        this.rootOrder = rootOrder;
+        this.parentOrder = parentOrder;
+        this.orderSide = orderSide;
+        this.orderType = orderType;
+        this.orderAction = orderAction;
+        this.orderQuantity = orderQuantity;
+        this.filledQuantity = 0L;
+        this.remainingQuantity = orderQuantity;
+        this.canceledQuantity = 0L;
+        this.limitPrice = limitPrice;
+        this.requestKey = requestKey;
+        this.orderStatus = StockOrderStatus.PENDING;
+        this.orderedAt = orderedAt;
+    }
+
+    public static StockOrder createNew(
+            Stock stock,
+            Account account,
+            StockOrderSide orderSide,
+            StockOrderType orderType,
+            long orderQuantity,
+            Long limitPrice,
+            String requestKey,
+            LocalDateTime orderedAt
+    ) {
+        return new StockOrder(
+                stock,
+                account,
+                null,
+                null,
+                orderSide,
+                orderType,
+                StockOrderAction.NEW,
+                orderQuantity,
+                limitPrice,
+                requestKey,
+                orderedAt
+        );
+    }
+
+    public static StockOrder createAmendment(
+            StockOrder parentOrder,
+            StockOrderType orderType,
+            long orderQuantity,
+            Long limitPrice,
+            String requestKey,
+            LocalDateTime orderedAt
+    ) {
+        StockOrder root;
+
+        if (parentOrder.rootOrder == null) {
+            root = parentOrder;
+        } else {
+            root = parentOrder.rootOrder;
+        }
+
+        return new StockOrder(
+                parentOrder.stock,
+                parentOrder.account,
+                root,
+                parentOrder,
+                parentOrder.orderSide,
+                orderType,
+                StockOrderAction.AMEND,
+                orderQuantity,
+                limitPrice,
+                requestKey,
+                orderedAt
+        );
+    }
+
+    public static StockOrder createCancellation(
+            StockOrder parentOrder,
+            long orderQuantity,
+            String requestKey,
+            LocalDateTime orderedAt
+    ) {
+        StockOrder root;
+
+        if (parentOrder.rootOrder == null) {
+            root = parentOrder;
+        } else {
+            root = parentOrder.rootOrder;
+        }
+
+        return new StockOrder(
+                parentOrder.stock,
+                parentOrder.account,
+                root,
+                parentOrder,
+                parentOrder.orderSide,
+                parentOrder.orderType,
+                StockOrderAction.CANCEL,
+                orderQuantity,
+                parentOrder.limitPrice,
+                requestKey,
+                orderedAt
+        );
+    }
 }

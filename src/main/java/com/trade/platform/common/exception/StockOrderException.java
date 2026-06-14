@@ -4,11 +4,11 @@ import com.trade.platform.common.response.ResponseMessage;
 import lombok.Getter;
 
 @Getter
-public class OrderException extends RuntimeException {
+public class StockOrderException extends RuntimeException {
 
     private final ResponseMessage responseMessage;
 
-    public OrderException(ResponseMessage responseMessage) {
+    public StockOrderException(ResponseMessage responseMessage) {
         super(responseMessage.getMessage());
         this.responseMessage = responseMessage;
     }
