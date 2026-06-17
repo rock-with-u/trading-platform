@@ -63,4 +63,3 @@ public class CashTransaction extends BaseEntity {
         return new CashTransaction(account, transactionAmount, transactionType, transactionRequestKey);
     }
 }
-

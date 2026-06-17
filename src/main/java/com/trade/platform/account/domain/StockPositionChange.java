@@ -63,9 +63,6 @@ public class StockPositionChange extends BaseEntity {
     @Column(name = "average_price_after", nullable = false)
     private Long averagePriceAfter;
 
-    @Column(name = "occurred_at", nullable = false)
-    private LocalDateTime occurredAt;
-
     private StockPositionChange(
             AccountPosting accountPosting,
             Stock stock,
@@ -73,8 +70,7 @@ public class StockPositionChange extends BaseEntity {
             long quantityBefore,
             long quantityAfter,
             long averagePriceBefore,
-            long averagePriceAfter,
-            LocalDateTime occurredAt
+            long averagePriceAfter
     ) {
         this.accountPosting = accountPosting;
         this.stock = stock;
@@ -84,7 +80,6 @@ public class StockPositionChange extends BaseEntity {
         this.quantityAfter = quantityAfter;
         this.averagePriceBefore = averagePriceBefore;
         this.averagePriceAfter = averagePriceAfter;
-        this.occurredAt = occurredAt;
     }
 
     public static StockPositionChange create(
@@ -94,8 +89,7 @@ public class StockPositionChange extends BaseEntity {
             long quantityBefore,
             long quantityAfter,
             long averagePriceBefore,
-            long averagePriceAfter,
-            LocalDateTime occurredAt
+            long averagePriceAfter
     ) {
         return new StockPositionChange(
                 accountPosting,
@@ -104,8 +98,7 @@ public class StockPositionChange extends BaseEntity {
                 quantityBefore,
                 quantityAfter,
                 averagePriceBefore,
-                averagePriceAfter,
-                occurredAt
+                averagePriceAfter
         );
     }
 }
