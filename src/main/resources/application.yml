@@ -16,5 +16,15 @@ spring:
         format_sql: true
     open-in-view: false
 
+  data:
+    redis:
+      host: localhost
+      port: ${REDIS_PORT:6379}
+      timeout: 2s
+
+kis:
+  app-key: ${KIS_APP_KEY}
+  app-secret: ${KIS_APP_SECRET}
+  rest-base-url: https://openapivts.koreainvestment.com:29443
 server:
-  port: 8080
+  port: ${SERVER_PORT}

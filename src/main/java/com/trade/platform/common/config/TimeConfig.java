@@ -1,4 +1,4 @@
-package com.trade.platform.common;
+package com.trade.platform.common.config;
 
 import java.time.ZoneId;
 import org.springframework.context.annotation.Configuration;
