@@ -1,6 +1,9 @@
 package com.trade.platform.account.domain;
 
+import com.trade.platform.account.domain.result.SellReservationResult;
 import com.trade.platform.common.entity.BaseEntity;
+import com.trade.platform.common.exception.AccountException;
+import com.trade.platform.common.response.ResponseMessage;
 import com.trade.platform.market.domain.Stock;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -60,5 +63,26 @@ public class StockPosition extends BaseEntity {
 
     public static StockPosition create(Account account, Stock stock) {
         return new StockPosition(account, stock);
+    }
+
+    public SellReservationResult reserveSell(long orderQuantity) {
+
+        long availableQuantity = positionQuantity - sellReservedQuantity;
+
+        if (availableQuantity < orderQuantity) {
+            throw new AccountException(ResponseMessage.STOCK_QUANTITY_DEFICIENT);
+        }
+
+        long sellReservedBefore = this.sellReservedQuantity;
+
+        this.sellReservedQuantity += orderQuantity;
+
+        long sellReservedAfter = this.sellReservedQuantity;
+
+        return new SellReservationResult(
+                sellReservedBefore,
+                sellReservedAfter,
+                orderQuantity
+        );
     }
 }

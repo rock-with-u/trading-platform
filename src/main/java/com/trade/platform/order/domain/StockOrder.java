@@ -48,11 +48,11 @@ public class StockOrder extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_side", nullable = false, length = 10)
-    private StockOrderSide orderSide;
+    private OrderSide orderSide;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "order_type", nullable = false, length = 10)
-    private StockOrderType orderType;
+    @Column(name = "price_type", nullable = false, length = 10)
+    private OrderPriceType priceType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_action", nullable = false, length = 10)
@@ -88,8 +88,8 @@ public class StockOrder extends BaseEntity {
             Account account,
             StockOrder rootOrder,
             StockOrder parentOrder,
-            StockOrderSide orderSide,
-            StockOrderType orderType,
+            OrderSide orderSide,
+            OrderPriceType orderPriceType,
             StockOrderAction orderAction,
             long orderQuantity,
             Long limitPrice,
@@ -101,7 +101,7 @@ public class StockOrder extends BaseEntity {
         this.rootOrder = rootOrder;
         this.parentOrder = parentOrder;
         this.orderSide = orderSide;
-        this.orderType = orderType;
+        this.priceType = orderPriceType;
         this.orderAction = orderAction;
         this.orderQuantity = orderQuantity;
         this.filledQuantity = 0L;
@@ -116,8 +116,8 @@ public class StockOrder extends BaseEntity {
     public static StockOrder createNew(
             Stock stock,
             Account account,
-            StockOrderSide orderSide,
-            StockOrderType orderType,
+            OrderSide orderSide,
+            OrderPriceType orderPriceType,
             long orderQuantity,
             Long limitPrice,
             String requestKey,
@@ -129,7 +129,7 @@ public class StockOrder extends BaseEntity {
                 null,
                 null,
                 orderSide,
-                orderType,
+                orderPriceType,
                 StockOrderAction.NEW,
                 orderQuantity,
                 limitPrice,
@@ -140,7 +140,7 @@ public class StockOrder extends BaseEntity {
 
     public static StockOrder createAmendment(
             StockOrder parentOrder,
-            StockOrderType orderType,
+            OrderPriceType orderPriceType,
             long orderQuantity,
             Long limitPrice,
             String requestKey,
@@ -160,7 +160,7 @@ public class StockOrder extends BaseEntity {
                 root,
                 parentOrder,
                 parentOrder.orderSide,
-                orderType,
+                orderPriceType,
                 StockOrderAction.AMEND,
                 orderQuantity,
                 limitPrice,
@@ -189,7 +189,7 @@ public class StockOrder extends BaseEntity {
                 root,
                 parentOrder,
                 parentOrder.orderSide,
-                parentOrder.orderType,
+                parentOrder.priceType,
                 StockOrderAction.CANCEL,
                 orderQuantity,
                 parentOrder.limitPrice,

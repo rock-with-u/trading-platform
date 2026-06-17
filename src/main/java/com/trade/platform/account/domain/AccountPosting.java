@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,18 +46,23 @@ public class AccountPosting extends BaseEntity {
     @Column(name = "posting_key", nullable = false, unique = true, length = 100)
     private String postingKey;
 
+    @Column(name = "occurred_at", nullable = false)
+    private LocalDateTime occurredAt;
+
     private AccountPosting(
             Account account,
             PostingType postingType,
             Long sourceId,
             PostingSourceType sourceType,
-            String postingKey
+            String postingKey,
+            LocalDateTime occurredAt
     ) {
         this.account = account;
         this.postingType = postingType;
         this.sourceId = sourceId;
         this.sourceType = sourceType;
         this.postingKey = postingKey;
+        this.occurredAt = occurredAt;
     }
 
     public static AccountPosting create(
@@ -64,8 +70,9 @@ public class AccountPosting extends BaseEntity {
             PostingType postingType,
             Long sourceId,
             PostingSourceType sourceType,
-            String postingKey
+            String postingKey,
+            LocalDateTime occurredAt
     ) {
-        return new AccountPosting(account, postingType, sourceId, sourceType, postingKey);
+        return new AccountPosting(account, postingType, sourceId, sourceType, postingKey, occurredAt);
     }
 }

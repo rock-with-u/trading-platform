@@ -1,6 +1,9 @@
 package com.trade.platform.account.domain;
 
+import com.trade.platform.account.domain.result.BuyReservationResult;
 import com.trade.platform.common.entity.BaseEntity;
+import com.trade.platform.common.exception.AccountException;
+import com.trade.platform.common.response.ResponseMessage;
 import com.trade.platform.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -55,6 +59,33 @@ public class Account extends BaseEntity {
         this.availableSettledCashAmount = 0L;
         this.reservedBuyAmount = 0L;
         this.unsettledSellReceivableAmount = 0L;
+    }
+
+    public BuyReservationResult reserveBuyAmount(long orderAmount) {
+        if (getBuyAvailableAmount() < orderAmount) {
+            throw new AccountException(ResponseMessage.DEPOSIT_DEFICIENT);
+        }
+
+        long remainingAmount = orderAmount;
+
+        long usedUnsettledAmount = Math.min(this.unsettledSellReceivableAmount, remainingAmount);
+        this.unsettledSellReceivableAmount -= usedUnsettledAmount;
+        remainingAmount -= usedUnsettledAmount;
+
+        long usedSettledAmount = remainingAmount;
+        this.availableSettledCashAmount -= usedSettledAmount;
+
+        this.reservedBuyAmount += orderAmount;
+
+        return new BuyReservationResult(
+                usedSettledAmount,
+                usedUnsettledAmount,
+                orderAmount
+        );
+    }
+
+    public long getBuyAvailableAmount() {
+        return availableSettledCashAmount + unsettledSellReceivableAmount;
     }
 
     public static Account create(Member member, String accountNumber) {
