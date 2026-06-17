@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class KisApprovalKeyScheduler {
 
-    private static final String LOCK_KEY = "lock:kis:approval-key-refresh";
+    private static final String APPROVAL_LOCK_KEY = "lock:kis:approval-key:refresh";
     private static final Duration LOCK_LEASE_TIME = Duration.ofMinutes(2);
 
     private final RedisDistributedLockManager lockManager;
@@ -22,7 +22,7 @@ public class KisApprovalKeyScheduler {
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void refreshApprovalKey() {
-        Optional<RedisLockToken> lockToken = lockManager.tryLock(LOCK_KEY, LOCK_LEASE_TIME);
+        Optional<RedisLockToken> lockToken = lockManager.tryLock(APPROVAL_LOCK_KEY, LOCK_LEASE_TIME);
 
         if (lockToken.isEmpty()) {
             log.info("KIS Approval Key 갱신 생략 - 다른 인스턴스에서 실행 중");

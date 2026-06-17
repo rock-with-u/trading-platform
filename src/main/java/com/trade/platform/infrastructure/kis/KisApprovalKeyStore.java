@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class KisApprovalKeyStore implements KisApprovalKeyRepository {
 
-    private static final String KEY = "kis:websocket:approval-key";
+    private static final String APPROVAL_KEY = "kis:approval-key";
     private static final Duration EXPIRATION = Duration.ofHours(24);
 
     private final StringRedisTemplate redisTemplate;
@@ -17,6 +17,6 @@ public class KisApprovalKeyStore implements KisApprovalKeyRepository {
     public void save(String approvalKey) {
         redisTemplate
                 .opsForValue()
-                .set(KEY, approvalKey, EXPIRATION);
+                .set(APPROVAL_KEY, approvalKey, EXPIRATION);
     }
 }
